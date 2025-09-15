@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VCU Online Registration — Home</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">🎓</span>
+        <h1>VCU Online Registration</h1>
+      </div>
+      <nav aria-label="Primary">
+        <ul class="nav">
+          <li><a class="btn ghost active" href="index.html" aria-current="page">Home</a></li>
+          <li><a class="btn ghost" href="course-search.html">Course Search</a></li>
+          <li><a class="btn ghost" href="#" onclick="alert('In Progress'); return false;">Student Registration</a></li>
+          <li><a class="btn ghost" href="#" onclick="alert('In Progress'); return false;">Instructor Schedules</a></li>
+          <!-- NEW: Session Enrollment in global nav -->
+          <li><a class="btn ghost" href="session-enrollment.html">Session Enrollment</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h2>Register smarter. Search faster.</h2>
+      <p>Find classes by department, instructor, or course number. See credits, prerequisites, modality, and max enrollment at a glance.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="course-search.html">Start Course Search</a>
+        <a class="btn" href="#" onclick="alert('In Progress'); return false;">Go to Student Registration</a>
+      </div>
+    </section>
+
+    <section class="grid3">
+      <article class="card">
+        <h3>Course Search</h3>
+        <p>Filter by department, instructor, or course #. Instant results.</p>
+        <a class="btn link" href="course-search.html">Open →</a>
+      </article>
+
+      <article class="card">
+        <h3>Student Registration</h3>
+        <p>View enrolled sessions and register (validation). (Team deliverable)</p>
+        <button class="btn link" onclick="alert('In Progress');">Preview →</button>
+      </article>
+
+      <article class="card">
+        <h3>Instructor Schedules</h3>
+        <p>Faculty view assigned sessions. (Team deliverable)</p>
+        <button class="btn link" onclick="alert('In Progress');">Preview →</button>
+      </article>
+
+      <!-- NEW: Session Enrollment card -->
+      <article class="card">
+        <h3>Session Enrollment</h3>
+        <p>Authorized roster for a specific session (CRN/Session ID).</p>
+        <a class="btn link" href="session-enrollment.html">Open →</a>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container small">
+      <p>Jed, Joseph, and Aidan</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VCU Online Registration — Course Search</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">🎓</span>
+        <h1>VCU Online Registration</h1>
+      </div>
+      <nav aria-label="Primary">
+        <ul class="nav">
+          <li><a class="btn ghost" href="index.html">Home</a></li>
+          <li><a class="btn ghost active" href="course-search.html" aria-current="page">Course Search</a></li>
+          <li><a class="btn ghost" href="#" onclick="alert('In Progress'); return false;">Student Registration</a></li>
+          <li><a class="btn ghost" href="#" onclick="alert('In Progress'); return false;">Instructor Schedules</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Course Search</h2>
+
+    <!-- Filters -->
+    <form id="searchForm" class="filters" autocomplete="off">
+      <div class="field">
+        <label for="department">Department</label>
+        <select id="department" name="department">
+          <option value="">Any</option>
+          <option>INFO</option>
+          <option>CS</option>
+          <option>MATH</option>
+          <option>STAT</option>
+          <option>BUSN</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="instructor">Instructor</label>
+        <input id="instructor" name="instructor" type="text" placeholder="Example: John Doe" />
+      </div>
+
+      <div class="field">
+        <label for="courseNumber">Course #</label>
+        <input id="courseNumber" name="courseNumber" type="text" inputmode="numeric" placeholder="Example: 101" />
+      </div>
+
+      <div class="field">
+        <label for="modality">Modality</label>
+        <select id="modality" name="modality">
+          <option value="">Any</option>
+          <option>In-Person</option>
+          <option>Online</option>
+          <option>Hybrid</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Search</button>
+        <button type="reset" class="btn" id="resetBtn">Reset</button>
+      </div>
+    </form>
+
+    <!-- Meta / count -->
+    <div class="results-meta" aria-live="polite" aria-atomic="true">
+      <strong id="resultCount">0</strong> results
+    </div>
+
+    <!-- Results -->
+    <div class="table-wrap">
+      <table class="table" id="resultsTable">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Title</th>
+            <th>Credits</th>
+            <th>Prereqs</th>
+            <th>Modality</th>
+            <th>Max Enroll</th>
+          </tr>
+        </thead>
+        <tbody><!-- injected by JS --></tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container small">
+      <p>Jed, Joseph, and Aidan</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
