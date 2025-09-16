@@ -1,5 +1,5 @@
 TEAM CONTRIBUTIONS
-- Joseph Tuang: Student Registration Screen and Instructor Schedule Screen.
+- Joseph Taung: Student Registration Screen and Instructor Schedule Screen.
 - Jed: Home Screen and Course Search Screen.
 - Aidan Gantt: Session Enrollment Screen.
 
