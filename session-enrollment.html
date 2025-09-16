@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VCU Online Registration — Session Enrollment</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="logo">🎓</span>
+        <h1>VCU Online Registration</h1>
+      </div>
+      <nav aria-label="Primary">
+        <ul class="nav">
+          <li><a class="btn ghost" href="index.html">Home</a></li>
+          <li><a class="btn ghost" href="course-search.html">Course Search</a></li>
+          <li><a class="btn ghost" href="#">Student Registration</a></li>
+          <li><a class="btn ghost" href="#">Instructor Schedules</a></li>
+          <li><a class="btn ghost active" href="session-enrollment.html" aria-current="page">Session Enrollment</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2 id="sessionTitle">Session Enrollment</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody id="rosterBody">
+          <!-- JS will populate -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container small"><p>Jed, Joseph, and Aidan</p></div>
+  </footer>
+
+  <script>
+    const session = JSON.parse(localStorage.getItem("selectedSession") || "{}");
+    if (session.title){
+      document.getElementById("sessionTitle").textContent =
+        `${session.dept} ${session.number} — ${session.title}`;
+    }
+    // demo students
+    const students = [
+      {id: "1001", name:"Jane Doe", email:"jane@email.com"},
+      {id: "1002", name:"John Smith", email:"john@email.com"}
+    ];
+    const tbody = document.getElementById("rosterBody");
+    tbody.innerHTML = students.map(s =>
+      `<tr><td>${s.id}</td><td>${s.name}</td><td>${s.email}</td></tr>`
+    ).join("");
+  </script>
+</body>
+</html>
