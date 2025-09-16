@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VCU Online Registration — Instructor Schedules</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">🎓</span>
+        <h1>VCU Online Registration</h1>
+      </div>
+      <nav aria-label="Primary">
+        <ul class="nav">
+          <li><a class="btn ghost" href="index.html">Home</a></li>
+          <li><a class="btn ghost" href="course-search.html">Course Search</a></li>
+          <li><a class="btn ghost" href="student-registration.html">Student Registration</a></li>
+          <li><a class="btn ghost active" href="instructor-schedules.html" aria-current="page">Instructor Schedules</a></li>
+          <li><a class="btn ghost" href="session-enrollment.html">Session Enrollment</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Instructor Schedules</h2>
+
+    <!-- login -->
+    <form id="loginForm" class="filters" autocomplete="off">
+      <div class="field">
+        <label for="instructorSelect">Instructor</label>
+        <select id="instructorSelect" name="instructor" required></select>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn primary">Login</button>
+      </div>
+    </form>
+
+    <!-- assigned sessions -->
+    <section id="schedArea" hidden>
+      <div class="results-meta" aria-live="polite" aria-atomic="true">
+        <strong>Assigned Sessions</strong>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" id="schedTable">
+          <thead>
+            <tr>
+              <th>Session</th>
+              <th>Title</th>
+              <th>Credits</th>
+              <th>Modality</th>
+              <th>Seats</th>
+              <th>Students (preview)</th>
+            </tr>
+          </thead>
+          <tbody><!-- injected --></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container small"><p>Jed, Joseph, and Aidan</p></div>
+  </footer>
+
+  <script>
+    const KEY = "vcu_or_data_v1";
+    function loadData(){ return JSON.parse(localStorage.getItem(KEY)); }
+    function seedIfMissing(){
+      if (localStorage.getItem(KEY)) return;
+      const data = {
+        students: [
+          { id:"S1001", name:"Jane Doe", email:"jane@email.com", enrolled:["CS101-01"] },
+          { id:"S1002", name:"John Smith", email:"john@email.com", enrolled:[] },
+          { id:"S1003", name:"Alex Kim", email:"alex@email.com", enrolled:[] }
+        ],
+        instructors: [
+          { id:"I10", name:"Dr. Ada" },
+          { id:"I20", name:"Dr. Gauss" },
+          { id:"I30", name:"Prof. Hopper" }
+        ],
+        sessions: [
+          { id:"CS101-01", dept:"CS", number:"101", title:"Intro to CS", credits:3, modality:"In-Person", max:3, instructor:"Dr. Ada", enrolled:["S1001"] },
+          { id:"MATH201-02", dept:"MATH", number:"201", title:"Calculus II", credits:4, modality:"Online", max:2, instructor:"Dr. Gauss", enrolled:[] },
+          { id:"CS220-01", dept:"CS", number:"220", title:"Data Structures", credits:3, modality:"Hybrid", max:2, instructor:"Prof. Hopper", enrolled:[] }
+        ]
+      };
+      localStorage.setItem(KEY, JSON.stringify(data));
+    }
+
+    const instructorSelect = document.getElementById("instructorSelect");
+    const loginForm = document.getElementById("loginForm");
+    const schedArea = document.getElementById("schedArea");
+    const schedTableBody = document.querySelector("#schedTable tbody");
+
+    let currentInstructor = null;
+
+    function populateInstructors(){
+      const { instructors } = loadData();
+      instructorSelect.innerHTML = instructors.map(i => `<option value="${i.name}">${i.name}</option>`).join("");
+    }
+
+    function renderSchedule(){
+      const { sessions, students } = loadData();
+      const mine = sessions.filter(s => s.instructor === currentInstructor);
+      if (mine.length === 0){
+        schedTableBody.innerHTML = `<tr><td colspan="6">No assigned sessions.</td></tr>`;
+        return;
+      }
+      schedTableBody.innerHTML = mine.map(ssn => {
+        const seats = `${ssn.enrolled.length}/${ssn.max}`;
+        const names = ssn.enrolled.slice(0,3).map(id => {
+          const st = students.find(s => s.id === id);
+          return st ? st.name : id;
+        });
+        const more = ssn.enrolled.length > 3 ? `, +${ssn.enrolled.length-3} more` : "";
+        return `<tr>
+          <td>${ssn.id}</td>
+          <td>${ssn.title}</td>
+          <td>${ssn.credits}</td>
+          <td>${ssn.modality}</td>
+          <td>${seats}</td>
+          <td>${names.join(", ")}${more}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    seedIfMissing();
+    populateInstructors();
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      currentInstructor = instructorSelect.value;
+      schedArea.hidden = false;
+      renderSchedule();
+    });
+  </script>
+</body>
+</html>

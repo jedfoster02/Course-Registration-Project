@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VCU Online Registration — Student Registration</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">🎓</span>
+        <h1>VCU Online Registration</h1>
+      </div>
+      <nav aria-label="Primary">
+        <ul class="nav">
+          <li><a class="btn ghost" href="index.html">Home</a></li>
+          <li><a class="btn ghost" href="course-search.html">Course Search</a></li>
+          <li><a class="btn ghost active" href="student-registration.html" aria-current="page">Student Registration</a></li>
+          <li><a class="btn ghost" href="instructor-schedules.html">Instructor Schedules</a></li>
+          <li><a class="btn ghost" href="session-enrollment.html">Session Enrollment</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Student Registration</h2>
+
+    <!-- login -->
+    <form id="loginForm" class="filters" autocomplete="off">
+      <div class="field">
+        <label for="studentSelect">Student</label>
+        <select id="studentSelect" name="student" required></select>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn primary">Login</button>
+      </div>
+    </form>
+
+    <!-- enrollments -->
+    <section id="myEnrollments" hidden>
+      <div class="results-meta" aria-live="polite" aria-atomic="true">
+        <strong>My Enrolled Sessions</strong>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="enrolledTable">
+          <thead>
+            <tr>
+              <th>Session</th>
+              <th>Title</th>
+              <th>Credits</th>
+              <th>Modality</th>
+              <th>Instructor</th>
+              <th>Seats</th>
+            </tr>
+          </thead>
+          <tbody><!-- injected --></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- register -->
+    <section id="registerArea" hidden>
+      <h3>Register for a Session</h3>
+      <form id="registerForm" class="filters" autocomplete="off">
+        <div class="field">
+          <label for="sessionSelect">Available Sessions</label>
+          <select id="sessionSelect" name="session" required></select>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn primary">Register</button>
+          <button type="button" class="btn" id="refreshBtn">Refresh</button>
+        </div>
+      </form>
+      <p id="statusMsg" class="small" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container small"><p>Jed, Joseph, and Aidan</p></div>
+  </footer>
+
+  <script>
+    // shared data model in localStorage so pages stay in sync
+    const KEY = "vcu_or_data_v1";
+
+    function seedIfMissing(){
+      if (localStorage.getItem(KEY)) return;
+      const data = {
+        students: [
+          { id:"S1001", name:"Jane Doe", email:"jane@email.com", enrolled:["CS101-01"] },
+          { id:"S1002", name:"John Smith", email:"john@email.com", enrolled:[] },
+          { id:"S1003", name:"Alex Kim", email:"alex@email.com", enrolled:[] }
+        ],
+        instructors: [
+          { id:"I10", name:"Dr. Ada" },
+          { id:"I20", name:"Dr. Gauss" },
+          { id:"I30", name:"Prof. Hopper" }
+        ],
+        sessions: [
+          { id:"CS101-01", dept:"CS", number:"101", title:"Intro to CS", credits:3, modality:"In-Person", max:3, instructor:"Dr. Ada", enrolled:["S1001"] },
+          { id:"MATH201-02", dept:"MATH", number:"201", title:"Calculus II", credits:4, modality:"Online", max:2, instructor:"Dr. Gauss", enrolled:[] },
+          { id:"CS220-01", dept:"CS", number:"220", title:"Data Structures", credits:3, modality:"Hybrid", max:2, instructor:"Prof. Hopper", enrolled:[] }
+        ]
+      };
+      localStorage.setItem(KEY, JSON.stringify(data));
+    }
+    function loadData(){ return JSON.parse(localStorage.getItem(KEY)); }
+    function saveData(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
+
+    const studentSelect = document.getElementById("studentSelect");
+    const loginForm = document.getElementById("loginForm");
+    const myEnrollments = document.getElementById("myEnrollments");
+    const enrolledTableBody = document.querySelector("#enrolledTable tbody");
+    const registerArea = document.getElementById("registerArea");
+    const sessionSelect = document.getElementById("sessionSelect");
+    const registerForm = document.getElementById("registerForm");
+    const statusMsg = document.getElementById("statusMsg");
+    const refreshBtn = document.getElementById("refreshBtn");
+
+    let currentStudentId = null;
+
+    function populateStudents(){
+      const { students } = loadData();
+      studentSelect.innerHTML = students.map(s => `<option value="${s.id}">${s.name} — ${s.id}</option>`).join("");
+    }
+
+    function renderEnrollments(){
+      const { students, sessions } = loadData();
+      const me = students.find(s => s.id === currentStudentId);
+      if (!me) return;
+      if (me.enrolled.length === 0){
+        enrolledTableBody.innerHTML = `<tr><td colspan="6">No active enrollments.</td></tr>`;
+        return;
+      }
+      enrolledTableBody.innerHTML = me.enrolled.map(id => {
+        const ssn = sessions.find(x => x.id === id);
+        const seats = `${ssn.enrolled.length}/${ssn.max}`;
+        return `<tr>
+          <td>${ssn.id}</td>
+          <td>${ssn.title}</td>
+          <td>${ssn.credits}</td>
+          <td>${ssn.modality}</td>
+          <td>${ssn.instructor}</td>
+          <td>${seats}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    function populateAvailableSessions(){
+      const { students, sessions } = loadData();
+      const me = students.find(s => s.id === currentStudentId);
+      const choices = sessions.filter(ssn => !me.enrolled.includes(ssn.id));
+      if (choices.length === 0){
+        sessionSelect.innerHTML = `<option value="">No sessions available</option>`;
+        sessionSelect.disabled = true;
+      } else {
+        sessionSelect.disabled = false;
+        sessionSelect.innerHTML = choices.map(ssn => {
+          const seats = `${ssn.enrolled.length}/${ssn.max}`;
+          return `<option value="${ssn.id}">${ssn.dept} ${ssn.number} — ${ssn.title} (Seats ${seats})</option>`;
+        }).join("");
+      }
+    }
+
+    function setStatus(msg, ok=true){
+      statusMsg.textContent = msg;
+      statusMsg.className = ok ? "small" : "small error";
+    }
+
+    function registerForSession(e){
+      e.preventDefault();
+      const targetId = sessionSelect.value;
+      if (!targetId) return;
+
+      const data = loadData();
+      const me = data.students.find(s => s.id === currentStudentId);
+      const ssn = data.sessions.find(x => x.id === targetId);
+
+      if (me.enrolled.includes(targetId)){
+        setStatus("Already enrolled in this session.", false);
+        return;
+      }
+      if (ssn.enrolled.length >= ssn.max){
+        setStatus("This session is full.", false);
+        return;
+      }
+
+      me.enrolled.push(targetId);
+      ssn.enrolled.push(me.id);
+      saveData(data);
+
+      renderEnrollments();
+      populateAvailableSessions();
+      setStatus("Enrolled successfully.");
+    }
+
+    seedIfMissing();
+    populateStudents();
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      currentStudentId = studentSelect.value;
+      myEnrollments.hidden = false;
+      registerArea.hidden = false;
+      setStatus("");
+      renderEnrollments();
+      populateAvailableSessions();
+    });
+
+    registerForm.addEventListener("submit", registerForSession);
+    refreshBtn.addEventListener("click", () => {
+      renderEnrollments();
+      populateAvailableSessions();
+      setStatus("Refreshed.");
+    });
+  </script>
+</body>
+</html>
